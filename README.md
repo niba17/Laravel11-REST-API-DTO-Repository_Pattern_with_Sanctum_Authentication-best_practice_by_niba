@@ -13,24 +13,25 @@ Gabungan ini menciptakan arsitektur API yang skalabel, modular, dan dapat diperc
 - Group route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route dengan metode GET untuk modul halaman utama ('/home'), pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri session pengguna yang terotentikasi.
 ``` php
 Route::post('/register', [
-AuthController::class, 'register'
-])->name('register');
+    AuthController::class, 'register'
+    ])->name('register');
 Route::post('/login', [
-AuthController::class, 'login'
-])->name('login');
+    AuthController::class, 'login'
+    ])->name('login');
 
-Route::middleware('auth:sanctum')
-->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/home', [
-HomeController::class, 'index'
-]);
+        HomeController::class, 'index'
+    ]);
+    Route::get('/report', [
+        ReportController::class, 'index'
+    ]);
     Route::get('/user', [
-UserController::class, 'index'
-]);
+        UserController::class, 'index'
+    ]);
     Route::get('/logout', [
-AuthController::class, 'logout'
-]);
-});
+        AuthController::class, 'logout'
+    ]);
 ```
 ## AuthController.php
 
@@ -38,55 +39,64 @@ AuthController::class, 'logout'
 - Function login() mengotentikasi pengguna berdasarkan data yang diterima dari request, dan jika berhasil, membuat token otentikasi untuk pengguna tersebut.
 - Function logout() menghapus token akses saat ini dari pengguna yang dikaitkan dengan request lalu memberikan response untuk menunjukkan bahwa proses logout telah berhasil.
 ``` php
- public function register(AuthRequest $request)
+public function register(AuthRequest $request)
     {
         try {
             $result = $this->repository->create(RegisterDTO::apiRequest($request));
+
             return new $this->response([
-'data' => $result->original
-], $result->getStatusCode());
+                'data' => $result->original
+            ], $result->getStatusCode());
         } catch (HttpException $exception) {
             return new $this->response([
-'error' => $exception->getMessage()
-], $exception->getStatusCode());
+                'error' => $exception->getMessage()
+            ], $exception->getStatusCode());
         }
     }
 
     public function login(AuthRequest $request)
     {
         $user = User::where('name', $request->name)->first();
+
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
-'message' => 'Username atau Password tidak sesuai!'
-], 400);
+                'message' => 'Username atau Password tidak sesuai!'
+            ], 400);
         }
+
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response(
-['data' => $user,'token' => $token,
-], 200);
+
+        return response([
+            'data' => $user,
+            'token' => $token,
+        ], 200);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json([
-'data' => true
-], 200);
+            'data' => true
+        ], 200);
     }
 ```
 ## RegisterRepository.php
 
 - Function create() bertanggung jawab untuk membuat entitas baru, seperti pengguna, menggunakan data yang diterima dari request. Permintaan tersebut kemudian diteruskan ke model yang sesuai untuk proses pembuatan entitas. Jika entitas berhasil dibuat, resource dibentuk menggunakan class yang sesuai, dan response yang tepat dikembalikan dengan kode status HTTP_CREATED (201) yang menunjukkan pembuatan berhasil. Namun, jika terjadi kesalahan selama proses pembuatan entitas, pengecualian HttpException akan dilemparkan dengan kode status HTTP_INTERNAL_SERVER_ERROR (500) yang menandakan kesalahan server internal.
 ``` php
-public function create($request): JsonResponse
+ public function create($request): JsonResponse
     {
         try {
             $user = $this->user->create($request);
+
             $resource = new RegisterResource($user);
+
             return new $this->response($resource, $this->response::HTTP_CREATED);
         } catch (\Throwable $e) {
             throw new HttpException($this->response::HTTP_INTERNAL_SERVER_ERROR, 'Error server internal');
         }
+
     }
 ```
 ## RegisterResource.php
