@@ -10,7 +10,7 @@ Gabungan ini menciptakan arsitektur API yang skalabel, modular, dan dapat diperc
 ## api.php
 
 - Konfigurasi route, di mana route tertentu digunakan untuk menangani proses otentikasi pengguna seperti 'register' dan 'login' menggunakan metode POST. 
-- Group route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route dengan metode GET untuk modul halaman utama ('/home'), pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri sesi pengguna yang terotentikasi.
+- Group route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route dengan metode GET untuk modul halaman utama ('/home'), pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri session pengguna yang terotentikasi.
 ``` php
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
