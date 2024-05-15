@@ -15,13 +15,47 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
 });
 ```
-- Buat file .env lalu select all dan copy isi dari .env.example ke dalam file .env
-- Buat database
-- Dalam file .env ganti value <strong>DB_CONNECTION</strong> jadi 'mysql' lalu uncomment <strong>DB_HOST</strong>, <strong>DB_PORT</strong>, <strong>DB_DATABASE</strong>, <strong>DB_USERNAME</strong> dan <strong>DB_PASSWORD</strong>
-- Dalam file .env sesuaikan value <strong>DB_DATABASE</strong> dengan nama database yang sudah dibuat 
-- Buka terminal lalu Generate value <strong>APP_KEY</strong> :
-``` bash
-php artisan key:generate
+## AuthController.php
+
+- Function register mengambil objek AuthRequest untuk validasi data yang diterima, lalu membuat entitas baru menggunakan DTO yang diambil dari request API, kemudian dikirim kembali sebagai response dalam bentuk tertentu, dengan mempertimbangkan kemungkinan pengecualian HTTP yang mungkin terjadi selama proses ini.
+- Function login mengotentikasi pengguna berdasarkan data yang diterima dari request, dan jika berhasil, membuat token otentikasi untuk pengguna tersebut.
+- Function logout menghapus token akses saat ini dari pengguna yang dikaitkan dengan request lalu memberikan response untuk menunjukkan bahwa proses logout telah berhasil.
+``` php
+ public function register(AuthRequest $request)
+    {
+        try {
+            $result = $this->repository->create(RegisterDTO::apiRequest($request));
+
+            return new $this->response(['data' => $result->original], $result->getStatusCode());
+        } catch (HttpException $exception) {
+            return new $this->response(['error' => $exception->getMessage()], $exception->getStatusCode());
+        }
+    }
+
+    public function login(AuthRequest $request)
+    {
+        $user = User::where('name', $request->name)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response([
+                'message' => 'Username atau Password tidak sesuai!'
+            ], 400);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response([
+            'data' => $user,
+            'token' => $token,
+        ], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['data' => true], 200);
+    }
 ```
 - Install Asset Bundler via Vite :
 ``` bash
