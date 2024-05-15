@@ -4,7 +4,8 @@ Laravel REST API dengan pendekatan Data Transfer Object (DTO), Repository Patter
 
 ## api.php
 
-Konfigurasi route, di mana route tertentu digunakan untuk menangani proses otentikasi pengguna seperti 'register' dan 'login' menggunakan metode POST. Selanjutnya, grup route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route untuk halaman utama ('/home'), daftar pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri sesi pengguna yang terotentikasi.
+- Konfigurasi route, di mana route tertentu digunakan untuk menangani proses otentikasi pengguna seperti 'register' dan 'login' menggunakan metode POST. 
+- Group route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route untuk halaman utama ('/home'), daftar pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri sesi pengguna yang terotentikasi.
 ``` php
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
