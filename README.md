@@ -2,7 +2,7 @@
 
 Laravel REST API dengan pendekatan Data Transfer Object (DTO), Repository Pattern, dan Sanctum Authentication memberikan kerangka kerja yang terstruktur, terorganisir, dan aman. DTO sebagai Contratcs untuk memformat dan memvalidasi data yang ditransfer antara berbagai lapisan aplikasi, menjaga keselarasan data dan meningkatkan keamanan. Repository Pattern memisahkan logika akses data dari logika bisnis, memfasilitasi pengujian terpisah dan maintenance yang lebih mudah, sementara Sanctum Authentication menyediakan lapisan keamanan yang kokoh dengan sistem token yang memungkinkan otentikasi API yang aman. Gabungan ini menciptakan arsitektur API yang skalabel, modular, dan dapat dipercaya, mendukung pengembangan yang efisien dan berkelanjutan dalam lingkungan produksi yang beragam.
 
-- api.php
+## api.php
 
 Konfigurasi route, di mana route tertentu digunakan untuk menangani proses otentikasi pengguna seperti 'register' dan 'login' menggunakan metode POST. Selanjutnya, grup route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route untuk halaman utama ('/home'), daftar pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri sesi pengguna yang terotentikasi.
 ``` php
