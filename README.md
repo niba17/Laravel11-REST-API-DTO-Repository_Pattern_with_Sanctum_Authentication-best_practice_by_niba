@@ -17,15 +17,14 @@ Route::middleware('auth:sanctum')->group(function () {
 ```
 ## AuthController.php
 
-- Function register mengambil objek AuthRequest untuk validasi data yang diterima, lalu membuat entitas baru menggunakan DTO yang diambil dari request API, kemudian dikirim kembali sebagai response dalam bentuk tertentu, dengan mempertimbangkan kemungkinan pengecualian HTTP yang mungkin terjadi selama proses ini.
-- Function login mengotentikasi pengguna berdasarkan data yang diterima dari request, dan jika berhasil, membuat token otentikasi untuk pengguna tersebut.
-- Function logout menghapus token akses saat ini dari pengguna yang dikaitkan dengan request lalu memberikan response untuk menunjukkan bahwa proses logout telah berhasil.
+- Function register() mengambil objek AuthRequest untuk validasi data yang diterima, lalu membuat entitas baru menggunakan DTO yang diambil dari request API, kemudian dikirim kembali sebagai response dalam bentuk tertentu, dengan mempertimbangkan kemungkinan pengecualian HTTP yang mungkin terjadi selama proses ini.
+- Function login() mengotentikasi pengguna berdasarkan data yang diterima dari request, dan jika berhasil, membuat token otentikasi untuk pengguna tersebut.
+- Function logout() menghapus token akses saat ini dari pengguna yang dikaitkan dengan request lalu memberikan response untuk menunjukkan bahwa proses logout telah berhasil.
 ``` php
  public function register(AuthRequest $request)
     {
         try {
             $result = $this->repository->create(RegisterDTO::apiRequest($request));
-
             return new $this->response(['data' => $result->original], $result->getStatusCode());
         } catch (HttpException $exception) {
             return new $this->response(['error' => $exception->getMessage()], $exception->getStatusCode());
@@ -35,47 +34,49 @@ Route::middleware('auth:sanctum')->group(function () {
     public function login(AuthRequest $request)
     {
         $user = User::where('name', $request->name)->first();
-
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([
-                'message' => 'Username atau Password tidak sesuai!'
-            ], 400);
+            return response(['message' => 'Username atau Password tidak sesuai!'], 400);
         }
-
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response([
-            'data' => $user,
-            'token' => $token,
-        ], 200);
+        return response(['data' => $user,'token' => $token,], 200);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-
         return response()->json(['data' => true], 200);
     }
 ```
-- Install Asset Bundler via Vite :
-``` bash
-npm install vite
-```
-- Run Asset Bundler :
-``` bash
-npm run dev
-```
-- ketik 'vite'
-- Buka terminal baru lalu migrate database :
-``` bash
-php artisan migrate:fresh
-```
-- Run development server :
-``` bash
-php artisan serve
-```
-- <strong>mete.<strong>
+## RegisterRepository.php
 
+- Function create() bertanggung jawab untuk membuat entitas baru, seperti pengguna, menggunakan data yang diterima dari request. Permintaan tersebut kemudian diteruskan ke model yang sesuai untuk proses pembuatan entitas. Jika entitas berhasil dibuat, resource dibentuk menggunakan class yang sesuai, dan response yang tepat dikembalikan dengan kode status HTTP_CREATED (201) yang menunjukkan pembuatan berhasil. Namun, jika terjadi kesalahan selama proses pembuatan entitas, pengecualian HttpException akan dilemparkan dengan kode status HTTP_INTERNAL_SERVER_ERROR (500) yang menandakan kesalahan server internal.
+``` php
+public function create($request): JsonResponse
+    {
+        try {
+            $user = $this->user->create($request);
+            $resource = new RegisterResource($user);
+            return new $this->response($resource, $this->response::HTTP_CREATED);
+        } catch (\Throwable $e) {
+            throw new HttpException($this->response::HTTP_INTERNAL_SERVER_ERROR, 'Error server internal');
+        }
+    }
+```
+## RegisterResource.php
+- Function toArray() mengonversi model pengguna ke dalam bentuk array yang digunakan untuk respons JSON. Dalam array tersebut, informasi yang relevan dari model seperti ID, nama, dan tanggal pembuatan dan pembaruan ditetapkan sebagai kunci dan nilai. Metode ini juga memperhatikan format tanggal yang disesuaikan, mengonversi tanggal ke format yang lebih mudah dibaca, atau null jika tanggal tidak tersedia. Ada juga komentar yang menunjukkan kemungkinan tambahan informasi yang dapat dimasukkan dalam array, seperti perbedaan waktu yang relatif.
+``` php
+ public function toArray($request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->created_at ? $this->created_at->format('d M Y H:i') : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->format('d M Y H:i') : null,
+            // 'dfh_created_at' => $this->created_at ? $this->created_at->diffForHumans() : null,
+            // 'dfh_updated_at' => $this->updated_at ? $this->updated_at->diffForHumans() : null,
+        ];
+    }
+```
 ## Regards
 
 theNiba
