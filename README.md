@@ -69,7 +69,7 @@ public function create($request): JsonResponse
     }
 ```
 ## RegisterResource.php
-- Function toArray() mengonversi model pengguna ke dalam bentuk array yang digunakan untuk respons JSON. Dalam array tersebut, informasi yang relevan dari model seperti ID, nama, dan tanggal pembuatan dan pembaruan ditetapkan sebagai kunci dan nilai. Metode ini juga memperhatikan format tanggal yang disesuaikan, mengonversi tanggal ke format yang lebih mudah dibaca, atau null jika tanggal tidak tersedia. Ada juga komentar yang menunjukkan kemungkinan tambahan informasi yang dapat dimasukkan dalam array, seperti perbedaan waktu yang relatif.
+- Function toArray() mengonversi model pengguna ke dalam bentuk array yang digunakan untuk response JSON. Dalam array tersebut, informasi yang relevan dari model seperti id, name, dan tanggal pembuatan dan pembaruan ditetapkan sebagai key dan value. Metode ini juga memperhatikan format tanggal yang disesuaikan, mengonversi tanggal ke format yang lebih mudah dibaca, atau null jika tanggal tidak tersedia dan perbedaan waktu yang relatif.
 ``` php
  public function toArray($request): array
     {
