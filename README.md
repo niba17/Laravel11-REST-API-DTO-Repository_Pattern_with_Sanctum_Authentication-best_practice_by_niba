@@ -1,6 +1,6 @@
 ## About the repository
 
-Laravel REST API dengan pendekatan Data Transfer Object (DTO), Repository Pattern, dan Sanctum Authentication merupakan kombinasi tingkat lanjut (advance) dalam perancangan sistem backend serta memberikan kerangka kerja yang terstruktur, terorganisir, dan aman. 
+Laravel REST API dengan pendekatan Data Transfer Object (DTO), Repository Pattern, dan Sanctum Authentication merupakan kombinasi tingkat lanjut (advance) dalam pengembangan sistem backend serta memberikan kerangka kerja yang terstruktur, terorganisir, dan aman. 
 - DTO sebagai Contratcs untuk memformat data yang ditransfer antara berbagai lapisan aplikasi, menjaga keselarasan lalu lintas data.
 - Repository Pattern memisahkan logika akses data dari logika bisnis, memfasilitasi pengujian terpisah dan maintenance yang lebih mudah.
 - Sanctum Authentication menyediakan lapisan keamanan yang kokoh dengan sistem token untuk otentikasi API yang aman.
