@@ -78,8 +78,8 @@ public function create($request): JsonResponse
             'name' => $this->name,
             'created_at' => $this->created_at ? $this->created_at->format('d M Y H:i') : null,
             'updated_at' => $this->updated_at ? $this->updated_at->format('d M Y H:i') : null,
-            // 'dfh_created_at' => $this->created_at ? $this->created_at->diffForHumans() : null,
-            // 'dfh_updated_at' => $this->updated_at ? $this->updated_at->diffForHumans() : null,
+            'dfh_created_at' => $this->created_at ? $this->created_at->diffForHumans() : null,
+            'dfh_updated_at' => $this->updated_at ? $this->updated_at->diffForHumans() : null,
         ];
     }
 ```
