@@ -12,13 +12,24 @@ Gabungan ini menciptakan arsitektur API yang skalabel, modular, dan dapat diperc
 - Konfigurasi route, di mana route tertentu digunakan untuk menangani proses otentikasi pengguna seperti 'register' dan 'login' menggunakan metode POST. 
 - Group route dilindungi middleware 'auth:sanctum', memastikan hanya pengguna yang terotentikasi yang dapat mengaksesnya. Di dalam grup tersebut, terdapat route dengan metode GET untuk modul halaman utama ('/home'), pengguna ('/user'), dan logout ('/logout'). Route '/logout' digunakan untuk mengakhiri session pengguna yang terotentikasi.
 ``` php
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/register', [
+AuthController::class, 'register'
+])->name('register');
+Route::post('/login', [
+AuthController::class, 'login'
+])->name('login');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/home', [HomeController::class, 'index']);
-    Route::get('/user', [UserController::class, 'index']);
-    Route::get('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')
+->group(function () {
+    Route::get('/home', [
+HomeController::class, 'index'
+]);
+    Route::get('/user', [
+UserController::class, 'index'
+]);
+    Route::get('/logout', [
+AuthController::class, 'logout'
+]);
 });
 ```
 ## AuthController.php
@@ -31,9 +42,13 @@ Route::middleware('auth:sanctum')->group(function () {
     {
         try {
             $result = $this->repository->create(RegisterDTO::apiRequest($request));
-            return new $this->response(['data' => $result->original], $result->getStatusCode());
+            return new $this->response([
+'data' => $result->original
+], $result->getStatusCode());
         } catch (HttpException $exception) {
-            return new $this->response(['error' => $exception->getMessage()], $exception->getStatusCode());
+            return new $this->response([
+'error' => $exception->getMessage()
+], $exception->getStatusCode());
         }
     }
 
@@ -41,16 +56,22 @@ Route::middleware('auth:sanctum')->group(function () {
     {
         $user = User::where('name', $request->name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response(['message' => 'Username atau Password tidak sesuai!'], 400);
+            return response([
+'message' => 'Username atau Password tidak sesuai!'
+], 400);
         }
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response(['data' => $user,'token' => $token,], 200);
+        return response(
+['data' => $user,'token' => $token,
+], 200);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['data' => true], 200);
+        return response()->json([
+'data' => true
+], 200);
     }
 ```
 ## RegisterRepository.php
